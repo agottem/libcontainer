@@ -1,0 +1,11 @@
+For detailed information on using C container library and for the latest version, please visit:
+http://www.agottem.com/libcontainer
+
+To build and install the C container library, perform the following commands:
+    ./configure
+    make
+    sudo make install
+
+Autotools files can be cleaned and rebuilt with the following commands:
+    make maintainer-clean
+    autoreconf --install
