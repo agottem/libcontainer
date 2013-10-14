@@ -86,15 +86,21 @@ Container_CListState (struct container__clist* restrict);
 
 
 extern void
+Container_StartCListScanNode (
+                              struct container__clist_node* restrict,
+                              struct container__clist_scan* restrict
+                             );
+
+extern void
 Container_StartCListScanHead (
-                              struct container__clist_scan* restrict,
-                              struct container__clist* restrict
+                              struct container__clist* restrict,
+                              struct container__clist_scan* restrict
                              );
 
 extern void
 Container_StartCListScanTail (
-                              struct container__clist_scan* restrict,
-                              struct container__clist* restrict
+                              struct container__clist* restrict,
+                              struct container__clist_scan* restrict
                              );
 
 extern void
@@ -105,6 +111,6 @@ Container_ResumeCListScanPrev (struct container__clist_scan* restrict);
 
 extern enum container__clist_scan_state
 Container_CListScanState (
-                          struct container__clist_scan* restrict,
-                          struct container__clist* restrict
+                          struct container__clist* restrict,
+                          struct container__clist_scan* restrict
                          );

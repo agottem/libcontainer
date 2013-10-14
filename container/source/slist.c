@@ -23,9 +23,15 @@ Container_SListState (struct container__slist* restrict);
 
 
 extern void
+Container_StartSListScanNode (
+                              struct container__slist_node* restrict,
+                              struct container__slist_scan* restrict
+                             );
+
+extern void
 Container_StartSListScan (
-                          struct container__slist_scan* restrict,
-                          struct container__slist* restrict
+                          struct container__slist* restrict,
+                          struct container__slist_scan* restrict
                          );
 
 extern void

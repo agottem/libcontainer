@@ -42,9 +42,15 @@ Container_QueueState (struct container__queue* restrict);
 
 
 extern void
+Container_StartQueueScanNode (
+                              struct container__queue_node* restrict,
+                              struct container__queue_scan* restrict
+                             );
+
+extern void
 Container_StartQueueScan (
-                          struct container__queue_scan* restrict,
-                          struct container__queue* restrict
+                          struct container__queue* restrict,
+                          struct container__queue_scan* restrict
                          );
 
 extern void

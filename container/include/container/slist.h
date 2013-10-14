@@ -133,15 +133,27 @@ Container_SListState (struct container__slist* restrict);
 
 
 /*
+    Start a scan of of the slist from the specified node
+
+    Syntax:
+        Container_StartSListScanNode(&my_element.node, &scan_slist);
+ */
+inline void
+Container_StartSListScanNode (
+                              struct container__slist_node* restrict,
+                              struct container__slist_scan* restrict
+                             );
+
+/*
     Start a scan of all slist nodes, beginning at the head
 
     Syntax:
-        Container_StartSListScan(&scan_slist, &my_slist);
+        Container_StartSListScan(&my_slist, &scan_slist);
  */
 inline void
 Container_StartSListScan (
-                          struct container__slist_scan* restrict,
-                          struct container__slist* restrict
+                          struct container__slist* restrict,
+                          struct container__slist_scan* restrict
                          );
 
 /*
@@ -204,12 +216,22 @@ Container_SListState (struct container__slist* restrict slist)
 }
 
 inline void
+Container_StartSListScanNode (
+                              struct container__slist_node* restrict node,
+                              struct container__slist_scan* restrict scan
+                             )
+{
+    scan->current_node = node;
+}
+
+
+inline void
 Container_StartSListScan (
-                          struct container__slist_scan* restrict scan,
-                          struct container__slist* restrict      slist
+                          struct container__slist* restrict      slist,
+                          struct container__slist_scan* restrict scan
                          )
 {
-    scan->current_node = slist->head;
+    Container_StartSListScanNode(slist->head, scan);
 }
 
 inline void

@@ -55,7 +55,7 @@ int main (int argument_count, char** arguments)
     }
 
     for(
-        Container_StartSListScan(&scan, &my_list);
+        Container_StartSListScan(&my_list, &scan);
         Container_SListScanState(&scan) != container__slist_scan_finished;
         Container_ResumeSListScan(&scan)
        )

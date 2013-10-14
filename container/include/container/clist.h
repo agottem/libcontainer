@@ -269,27 +269,39 @@ Container_CListState (struct container__clist* restrict);
 
 
 /*
+    Start a clist scan from the specified node
+
+    Syntax:
+        Container_StartCListScanNode(&my_element.node, &clist_scan);
+ */
+inline void
+Container_StartCListScanNode (
+                              struct container__clist_node* restrict,
+                              struct container__clist_scan* restrict
+                             );
+
+/*
     Start a clist scan from the head node
 
     Syntax:
-        Container_StartCListScanHead(&clist_scan, &my_clist);
+        Container_StartCListScanHead(&my_clist, &clist_scan);
  */
 inline void
 Container_StartCListScanHead (
-                              struct container__clist_scan* restrict,
-                              struct container__clist* restrict
+                              struct container__clist* restrict,
+                              struct container__clist_scan* restrict
                              );
 
 /*
     Start a clist scan from the tail node
 
     Syntax:
-        Container_StartCListScanTail(&clist_scan, &my_clist);
+        Container_StartCListScanTail(&my_clist, &clist_scan);
  */
 inline void
 Container_StartCListScanTail (
-                              struct container__clist_scan* restrict,
-                              struct container__clist* restrict
+                              struct container__clist* restrict,
+                              struct container__clist_scan* restrict
                              );
 
 /*
@@ -314,12 +326,12 @@ Container_ResumeCListScanPrev (struct container__clist_scan* restrict);
     Return the state of a clist scan
 
     Syntax:
-        scan_state = Container_CListScanState(&clist_scan, &my_clist);
+        scan_state = Container_CListScanState(&my_clist, &clist_scan);
  */
 inline enum container__clist_scan_state
 Container_CListScanState (
-                          struct container__clist_scan* restrict,
-                          struct container__clist* restrict
+                          struct container__clist* restrict,
+                          struct container__clist_scan* restrict
                          );
 
 
@@ -569,21 +581,30 @@ Container_CListState (struct container__clist* restrict clist)
 }
 
 inline void
-Container_StartCListScanHead (
-                              struct container__clist_scan* restrict scan,
-                              struct container__clist* restrict      clist
+Container_StartCListScanNode (
+                              struct container__clist_node* restrict node,
+                              struct container__clist_scan* restrict scan
                              )
 {
-    scan->current_node = clist->sentinel.next;
+    scan->current_node = node;
+}
+
+inline void
+Container_StartCListScanHead (
+                              struct container__clist* restrict      clist,
+                              struct container__clist_scan* restrict scan
+                             )
+{
+    Container_StartCListScanNode(clist->sentinel.next, scan);
 }
 
 inline void
 Container_StartCListScanTail (
-                              struct container__clist_scan* restrict scan,
-                              struct container__clist* restrict      clist
+                              struct container__clist* restrict      clist,
+                              struct container__clist_scan* restrict scan
                              )
 {
-    scan->current_node = clist->sentinel.prev;
+    Container_StartCListScanNode(clist->sentinel.prev, scan);
 }
 
 inline void
@@ -600,8 +621,8 @@ Container_ResumeCListScanPrev (struct container__clist_scan* restrict scan)
 
 inline enum container__clist_scan_state
 Container_CListScanState (
-                          struct container__clist_scan* restrict scan,
-                          struct container__clist* restrict      clist
+                          struct container__clist* restrict      clist,
+                          struct container__clist_scan* restrict scan
                          )
 {
     if(scan->current_node == &clist->sentinel)

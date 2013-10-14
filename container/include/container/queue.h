@@ -174,15 +174,27 @@ Container_QueueState (struct container__queue* restrict);
 
 
 /*
+    Start a queue scan from a specific node
+
+    Syntax:
+        Container_StartQueueScanNode(&my_element.node, &queue_scan);
+ */
+inline void
+Container_StartQueueScanNode (
+                              struct container__queue_node* restrict,
+                              struct container__queue_scan* restrict
+                             );
+
+/*
     Start a queue scan
 
     Syntax:
-        Container_StartQueueScan(&queue_scan, &my_queue);
+        Container_StartQueueScan(&my_queue, &queue_scan);
  */
 inline void
 Container_StartQueueScan (
-                          struct container__queue_scan* restrict,
-                          struct container__queue* restrict
+                          struct container__queue* restrict,
+                          struct container__queue_scan* restrict
                          );
 
 /*
@@ -308,12 +320,21 @@ Container_QueueState (struct container__queue* restrict queue)
 }
 
 inline void
+Container_StartQueueScanNode (
+                              struct container__queue_node* restrict node,
+                              struct container__queue_scan* restrict scan
+                             )
+{
+    scan->current_node = node;
+}
+
+inline void
 Container_StartQueueScan (
-                          struct container__queue_scan* restrict scan,
-                          struct container__queue* restrict      queue
+                          struct container__queue* restrict      queue,
+                          struct container__queue_scan* restrict scan
                          )
 {
-    scan->current_node = queue->head;
+    Container_StartQueueScanNode(queue->head, scan);
 }
 
 inline void

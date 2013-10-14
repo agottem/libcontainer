@@ -60,9 +60,9 @@ int main (int argument_count, char** arguments)
     Container_RemoveBalNode(&entry_block[rand()%ENTRY_COUNT].node, &my_bal);
 
     for(
-        Container_StartBalScanHeavy(&scan, &my_bal);
-        Container_BalScanState(&scan, &my_bal) != container__bal_scan_finished;
-        Container_ResumeBalScanHeavy(&scan, &my_bal)
+        Container_StartBalScanHeavy(&my_bal, &scan);
+        Container_BalScanState(&my_bal, &scan) != container__bal_scan_finished;
+        Container_ResumeBalScanHeavy(&my_bal, &scan)
        )
     {
         printf("Bucket weight: %d\n", (int)scan.current_bucket->item_count);

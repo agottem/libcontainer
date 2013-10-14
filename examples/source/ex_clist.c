@@ -63,8 +63,8 @@ int main (int argument_count, char** arguments)
     Container_RemoveCListNode(&entry_block[rand()%ENTRY_COUNT].node);
 
     for(
-        Container_StartCListScanHead(&scan, &my_list);
-        Container_CListScanState(&scan, &my_list) != container__clist_scan_finished;
+        Container_StartCListScanHead(&my_list, &scan);
+        Container_CListScanState(&my_list, &scan) != container__clist_scan_finished;
         Container_ResumeCListScanNext(&scan)
        )
     {
@@ -76,8 +76,8 @@ int main (int argument_count, char** arguments)
     }
 
     for(
-        Container_StartCListScanTail(&scan, &split_list);
-        Container_CListScanState(&scan, &split_list) != container__clist_scan_finished;
+        Container_StartCListScanTail(&split_list, &scan);
+        Container_CListScanState(&split_list, &scan) != container__clist_scan_finished;
         Container_ResumeCListScanPrev(&scan)
        )
     {

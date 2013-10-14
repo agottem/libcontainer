@@ -201,60 +201,60 @@ Container_BalBucketState (struct container__bal_bucket* restrict);
     Begin a bal scan, starting with the lightest buckets
 
     Syntax:
-        Container_StartBalScanLight(&bal_scan, &my_bal);
+        Container_StartBalScanLight(&my_bal, &bal_scan);
  */
 inline void
 Container_StartBalScanLight (
-                             struct container__bal_scan* restrict,
-                             struct container__bal* restrict
+                             struct container__bal* restrict,
+                             struct container__bal_scan* restrict
                             );
 
 /*
     Begin a bal scan, starting with the heaviest buckets
 
     Syntax:
-        Container_StartBalScanHeavy(&bal_scan, &my_bal);
+        Container_StartBalScanHeavy(&my_bal, &bal_scan);
  */
 inline void
 Container_StartBalScanHeavy (
-                             struct container__bal_scan* restrict,
-                             struct container__bal* restrict
+                             struct container__bal* restrict,
+                             struct container__bal_scan* restrict
                             );
 
 /*
     Resume a bal scan, visiting the lightest buckets first
 
     Syntax:
-        Container_ResumeBalScanLight(&bal_scan, &my_bal);
+        Container_ResumeBalScanLight(&my_bal, &bal_scan);
  */
 inline void
 Container_ResumeBalScanLight (
-                              struct container__bal_scan* restrict,
-                              struct container__bal* restrict
+                              struct container__bal* restrict,
+                              struct container__bal_scan* restrict
                              );
 
 /*
    Resume a bal scan, visiting the heaviest buckets first
 
    Syntax:
-       Container_ResumeBalScanHeavy(&bal_scan, &my_bal);
+       Container_ResumeBalScanHeavy(&my_bal, &bal_scan);
  */
 inline void
 Container_ResumeBalScanHeavy (
-                              struct container__bal_scan* restrict,
-                              struct container__bal* restrict
+                              struct container__bal* restrict,
+                              struct container__bal_scan* restrict
                              );
 
 /*
     Return the state of a bal scan
 
     Syntax:
-        state = Container_BalScanState(&bal_scan, &my_bal);
+        state = Container_BalScanState(&my_bal, &bal_scan);
  */
 inline enum container__bal_scan_state
 Container_BalScanState (
-                        struct container__bal_scan* restrict,
-                        struct container__bal* restrict
+                        struct container__bal* restrict,
+                        struct container__bal_scan* restrict
                        );
 
 
@@ -262,36 +262,36 @@ Container_BalScanState (
     Start a scan of an individual bucket
 
     Syntax:
-        Container_StartBalBucketScan(&bucket_scan, &bal_scan.current_bucket);
+        Container_StartBalBucketScan(&bal_scan.current_bucket, &bucket_scan);
  */
 inline void
 Container_StartBalBucketScan (
-                              struct container__bal_bucket_scan* restrict,
-                              struct container__bal_bucket* restrict
+                              struct container__bal_bucket* restrict,
+                              struct container__bal_bucket_scan* restrict
                              );
 
 /*
     Resume the scan of an individual bucket
 
     Syntax:
-        Container_ResumeBalBucketScan(&bucket_scan, &bal_scan.current_bucket);
+        Container_ResumeBalBucketScan(&bal_scan.current_bucket, &bucket_scan);
  */
 inline void
 Container_ResumeBalBucketScan (
-                               struct container__bal_bucket_scan* restrict,
-                               struct container__bal_bucket* restrict
+                               struct container__bal_bucket* restrict,
+                               struct container__bal_bucket_scan* restrict
                               );
 
 /*
     Return the state of a bucket scan
 
     Syntax:
-        state = Container_BalBucketScanState(&bucket_scan, &bal_scan.current_bucket);
+        state = Container_BalBucketScanState(&bal_scan.current_bucket, &bucket_scan);
  */
 inline enum container__bal_bucket_scan_state
 Container_BalBucketScanState (
-                              struct container__bal_bucket_scan* restrict,
-                              struct container__bal_bucket* restrict
+                              struct container__bal_bucket* restrict,
+                              struct container__bal_bucket_scan* restrict
                              );
 
 
@@ -310,8 +310,8 @@ Container_UpdateBalScan (struct container__bal_scan* restrict);
 
 inline void
 Container_UpdateBalBucketScan (
-                               struct container__bal_bucket_scan* restrict,
-                               struct container__bal_bucket* restrict
+                               struct container__bal_bucket* restrict,
+                               struct container__bal_bucket_scan* restrict
                               );
 
 
@@ -321,7 +321,7 @@ Container_UpdateBalScan (struct container__bal_scan* restrict scan)
 {
     enum container__clist_scan_state state;
 
-    state = Container_CListScanState(&scan->node_scan, scan->list);
+    state = Container_CListScanState(scan->list, &scan->node_scan);
     if(state == container__clist_scan_incomplete)
     {
         scan->current_bucket = CONTAINER__CONTAINER_OF(
@@ -336,13 +336,13 @@ Container_UpdateBalScan (struct container__bal_scan* restrict scan)
 
 inline void
 Container_UpdateBalBucketScan (
-                               struct container__bal_bucket_scan* restrict scan,
-                               struct container__bal_bucket* restrict      bucket
+                               struct container__bal_bucket* restrict      bucket,
+                               struct container__bal_bucket_scan* restrict scan
                               )
 {
     enum container__clist_scan_state state;
 
-    state = Container_CListScanState(&scan->node_scan, &bucket->item_list);
+    state = Container_CListScanState(&bucket->item_list, &scan->node_scan);
     if(state == container__clist_scan_incomplete)
     {
         scan->current_node = CONTAINER__CONTAINER_OF(
@@ -412,8 +412,8 @@ Container_MergeBal (
     Container_InitCList(&merged_nodes[0]);
     Container_InitCList(&merged_nodes[1]);
 
-    Container_StartBalScanHeavy(&dest_scan, dest);
-    Container_StartBalScanLight(&source_scan, source);
+    Container_StartBalScanHeavy(dest, &dest_scan);
+    Container_StartBalScanLight(source, &source_scan);
 
     do
     {
@@ -445,8 +445,8 @@ Container_MergeBal (
         dest_bucket->item_count += source_bucket->item_count;
 
         for(
-            Container_StartCListScanHead(&item_scan, &source_bucket->item_list);
-            Container_CListScanState(&item_scan, &source_bucket->item_list) != container__clist_scan_finished;
+            Container_StartCListScanHead(&source_bucket->item_list, &item_scan);
+            Container_CListScanState(&source_bucket->item_list, &item_scan) != container__clist_scan_finished;
             Container_ResumeCListScanNext(&item_scan)
            )
         {
@@ -463,12 +463,12 @@ Container_MergeBal (
 
         Container_MergeCListTail(&source_bucket->item_list, &dest_bucket->item_list);
 
-        Container_ResumeBalScanHeavy(&dest_scan, dest);
-        Container_ResumeBalScanLight(&source_scan, source);
+        Container_ResumeBalScanHeavy(dest, &dest_scan);
+        Container_ResumeBalScanLight(source, &source_scan);
 
         Container_RemoveCListNode(&dest_bucket->node);
         Container_AddCListHead(&dest_bucket->node, &merged_nodes[weight_group]);
-    }while(Container_BalScanState(&source_scan, source) != container__bal_scan_finished);
+    }while(Container_BalScanState(source, &source_scan) != container__bal_scan_finished);
 
     merged_nodes_state[0] = Container_CListState(&merged_nodes[0]);
     merged_nodes_state[1] = Container_CListState(&merged_nodes[1]);
@@ -653,20 +653,20 @@ Container_BalBucketState (struct container__bal_bucket* restrict bucket)
 
 inline void
 Container_StartBalScanLight (
-                             struct container__bal_scan* restrict scan,
-                             struct container__bal* restrict      bal
+                             struct container__bal* restrict      bal,
+                             struct container__bal_scan* restrict scan
                             )
 {
     scan->list = &bal->light_list;
 
-    Container_StartCListScanHead(&scan->node_scan, &bal->light_list);
+    Container_StartCListScanHead(&bal->light_list, &scan->node_scan);
     Container_UpdateBalScan(scan);
 
     if(scan->current_bucket == NULL)
     {
         scan->list = &bal->heavy_list;
 
-        Container_StartCListScanHead(&scan->node_scan, &bal->heavy_list);
+        Container_StartCListScanHead(&bal->heavy_list, &scan->node_scan);
 
         scan->current_bucket = CONTAINER__CONTAINER_OF(
                                                        scan->node_scan.current_node,
@@ -678,20 +678,20 @@ Container_StartBalScanLight (
 
 inline void
 Container_StartBalScanHeavy (
-                             struct container__bal_scan* restrict scan,
-                             struct container__bal* restrict      bal
+                             struct container__bal* restrict      bal,
+                             struct container__bal_scan* restrict scan
                             )
 {
     scan->list = &bal->heavy_list;
 
-    Container_StartCListScanHead(&scan->node_scan, &bal->heavy_list);
+    Container_StartCListScanHead(&bal->heavy_list, &scan->node_scan);
     Container_UpdateBalScan(scan);
 
     if(scan->current_bucket == NULL)
     {
         scan->list = &bal->light_list;
 
-        Container_StartCListScanHead(&scan->node_scan, &bal->light_list);
+        Container_StartCListScanHead(&bal->light_list, &scan->node_scan);
 
         scan->current_bucket = CONTAINER__CONTAINER_OF(
                                                        scan->node_scan.current_node,
@@ -703,8 +703,8 @@ Container_StartBalScanHeavy (
 
 inline void
 Container_ResumeBalScanLight (
-                              struct container__bal_scan* restrict scan,
-                              struct container__bal* restrict      bal
+                              struct container__bal* restrict      bal,
+                              struct container__bal_scan* restrict scan
                              )
 {
     Container_ResumeCListScanNext(&scan->node_scan);
@@ -714,15 +714,15 @@ Container_ResumeBalScanLight (
     {
         scan->list = &bal->heavy_list;
 
-        Container_StartCListScanHead(&scan->node_scan, &bal->heavy_list);
+        Container_StartCListScanHead(&bal->heavy_list, &scan->node_scan);
         Container_UpdateBalScan(scan);
     }
 }
 
 inline void
 Container_ResumeBalScanHeavy (
-                              struct container__bal_scan* restrict scan,
-                              struct container__bal* restrict      bal
+                              struct container__bal* restrict      bal,
+                              struct container__bal_scan* restrict scan
                              )
 {
     Container_ResumeCListScanNext(&scan->node_scan);
@@ -732,15 +732,15 @@ Container_ResumeBalScanHeavy (
     {
         scan->list = &bal->light_list;
 
-        Container_StartCListScanHead(&scan->node_scan, &bal->light_list);
+        Container_StartCListScanHead(&bal->light_list, &scan->node_scan);
         Container_UpdateBalScan(scan);
     }
 }
 
 inline enum container__bal_scan_state
 Container_BalScanState (
-                        struct container__bal_scan* restrict scan,
-                        struct container__bal* restrict      bal
+                        struct container__bal* restrict      bal,
+                        struct container__bal_scan* restrict scan
                        )
 {
     if(scan->current_bucket == NULL)
@@ -751,28 +751,28 @@ Container_BalScanState (
 
 inline void
 Container_StartBalBucketScan (
-                              struct container__bal_bucket_scan* restrict scan,
-                              struct container__bal_bucket* restrict      bucket
+                              struct container__bal_bucket* restrict      bucket,
+                              struct container__bal_bucket_scan* restrict scan
                              )
 {
-    Container_StartCListScanHead(&scan->node_scan, &bucket->item_list);
-    Container_UpdateBalBucketScan(scan, bucket);
+    Container_StartCListScanHead(&bucket->item_list, &scan->node_scan);
+    Container_UpdateBalBucketScan(bucket, scan);
 }
 
 inline void
 Container_ResumeBalBucketScan (
-                               struct container__bal_bucket_scan* restrict scan,
-                               struct container__bal_bucket* restrict      bucket
+                               struct container__bal_bucket* restrict      bucket,
+                               struct container__bal_bucket_scan* restrict scan
                               )
 {
     Container_ResumeCListScanNext(&scan->node_scan);
-    Container_UpdateBalBucketScan(scan, bucket);
+    Container_UpdateBalBucketScan(bucket, scan);
 }
 
 inline enum container__bal_bucket_scan_state
 Container_BalBucketScanState (
-                              struct container__bal_bucket_scan* restrict scan,
-                              struct container__bal_bucket* restrict      bucket
+                              struct container__bal_bucket* restrict      bucket,
+                              struct container__bal_bucket_scan* restrict scan
                              )
 {
     if(scan->current_node == NULL)

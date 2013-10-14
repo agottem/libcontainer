@@ -98,38 +98,6 @@ struct container__bst_scan
 
 
 /*
-    The required type for a user-defined bst compare function.  The compare function
-    is responsible for comparing two nodes and returning relative placement
-
-    For example:
-        enum container__bst_compare_result
-        MyCompare (
-                   struct container__bst_node* restrict node_1,
-                   struct container__bst_node* restrict node_2,
-                   void*                                user_data
-                  )
-        {
-            struct my_element* element_1;
-
-            element_1 = CONTAINER__CONTAINER_OF(node_1, struct my_element, node);
-            element_2 = CONTAINER__CONTAINER_OF(node_2, struct my_element, node);
-
-            if(element_1->my_key < element_2->my_key)
-                return container__bst_node_left;
-            else if(element_1->my_key > element_2->my_key)
-                return container__bst_node_right;
-
-            return container__bst_node_equal;
-        }
- */
-typedef enum container__bst_compare_result
-(*container__bst_compare_type) (
-                                struct container__bst_node* restrict,
-                                struct container__bst_node* restrict,
-                                void*
-                               );
-
-/*
     The required type for a user-defined bst lookup function.  The lookup function
     is responsible for comparing a value to a node and returning the relative direction
     of traversal
@@ -163,6 +131,39 @@ typedef enum container__bst_compare_result
 
 
 /*
+    The required type for a user-defined bst compare function.  The compare function
+    is responsible for comparing two nodes and returning relative placement
+
+    For example:
+        enum container__bst_compare_result
+        MyCompare (
+                   struct container__bst_node* restrict node_1,
+                   struct container__bst_node* restrict node_2,
+                   void*                                user_data
+                  )
+        {
+            struct my_element* element_1;
+
+            element_1 = CONTAINER__CONTAINER_OF(node_1, struct my_element, node);
+            element_2 = CONTAINER__CONTAINER_OF(node_2, struct my_element, node);
+
+            if(element_1->my_key < element_2->my_key)
+                return container__bst_node_left;
+            else if(element_1->my_key > element_2->my_key)
+                return container__bst_node_right;
+
+            return container__bst_node_equal;
+        }
+ */
+typedef enum container__bst_compare_result
+(*container__bst_compare_type) (
+                                struct container__bst_node* restrict,
+                                struct container__bst_node* restrict,
+                                void*
+                               );
+
+
+/*
     Initialize a bst.  The container will be empty upon initialization
 
     Syntax:
@@ -179,6 +180,31 @@ Container_InitBST (struct container__bst* restrict);
  */
 inline void
 Container_ResetBST (struct container__bst* restrict);
+
+
+/*
+    Lookup a node corresponding to the specified value in the bst.  Upon completion, either
+    no error will be returned and nearest_found_node will be set to the matching node, or
+    an error will be returned and nearest_found_node will be set to the node nearest the specified
+    lookup key which can then be used to quickly insert a node with the specified lookup key value
+
+    Syntax:
+        error = Container_LookupBSTNode(
+                                        &my_lookup_key_value,
+                                        &my_bst,
+                                        &MyLookup,
+                                        user_data,
+                                        &nearest_found_node
+                                       );
+ */
+inline enum container__error_code
+Container_LookupBSTNode (
+                         void*,
+                         struct container__bst* restrict,
+                         container__bst_lookup_type,
+                         void*,
+                         struct container__bst_node** restrict
+                        );
 
 
 /*
@@ -223,31 +249,6 @@ Container_RemoveBSTNode (
 
 
 /*
-    Lookup a node corresponding to the specified value in the bst.  Upon completion, either
-    no error will be returned and nearest_found_node will be set to the matching node, or
-    an error will be returned and nearest_found_node will be set to the node nearest the specified
-    lookup key which can then be used to quickly insert a node with the specified lookup key value
-
-    Syntax:
-        error = Container_LookupBSTNode(
-                                        &my_lookup_key_value,
-                                        &my_bst,
-                                        &MyLookup,
-                                        user_data,
-                                        &nearest_found_node
-                                       );
- */
-inline enum container__error_code
-Container_LookupBSTNode (
-                         void*,
-                         struct container__bst* restrict,
-                         container__bst_lookup_type,
-                         void*,
-                         struct container__bst_node** restrict
-                        );
-
-
-/*
     Return the state of a bst
 
     Syntax:
@@ -258,51 +259,64 @@ Container_BSTState (struct container__bst* restrict);
 
 
 /*
+    Start a scan starting with the specified node in the bst
+
+    Syntax:
+        Container_StartBSTScanNode(&my_element.node, &my_bst, &bst_scan);
+ */
+inline void
+Container_StartBSTScanNode (
+                            struct container__bst_node* restrict,
+                            struct container__bst* restrict,
+                            struct container__bst_scan* restrict
+                           );
+
+/*
     Start a scan starting with the right most node in the bst
 
     Syntax:
-        Container_StartBSTScanLeft(&bst_scan, &my_bst);
+        Container_StartBSTScanLeft(&my_bst, &bst_scan);
  */
 inline void
 Container_StartBSTScanLeft (
-                            struct container__bst_scan* restrict,
-                            struct container__bst* restrict
+                            struct container__bst* restrict,
+                            struct container__bst_scan* restrict
                            );
 
 /*
     Start a scan starting with the left most node in the bst
 
     Syntax:
-        Container_StartBSTScanRight(&bst_scan, &my_bst);
+        Container_StartBSTScanRight(&my_bst, &bst_scan);
  */
 inline void
 Container_StartBSTScanRight (
-                             struct container__bst_scan* restrict,
-                             struct container__bst* restrict
+                             struct container__bst* restrict,
+                             struct container__bst_scan* restrict
                             );
 
 /*
     Resume a scan, traversing left
 
     Syntax:
-        Container_ResumeBSTScanLeft(&bst_scan, &my_bst);
+        Container_ResumeBSTScanLeft(&my_bst, &bst_scan);
  */
 inline void
 Container_ResumeBSTScanLeft (
-                             struct container__bst_scan* restrict,
-                             struct container__bst* restrict
+                             struct container__bst* restrict,
+                             struct container__bst_scan* restrict
                             );
 
 /*
     Resume a scan, traversing right
 
     Syntax:
-        Container_ResumeBSTScanRight(&bst_scan, &my_bst);
+        Container_ResumeBSTScanRight(&my_bst, &bst_scan);
  */
 inline void
 Container_ResumeBSTScanRight (
-                              struct container__bst_scan* restrict,
-                              struct container__bst* restrict
+                              struct container__bst* restrict,
+                              struct container__bst_scan* restrict
                              );
 
 /*
@@ -320,20 +334,20 @@ Container_BSTScanState (struct container__bst_scan* restrict);
 
 inline void
 Container_UpdateBSTScan (
-                         struct container__bst_scan* restrict,
-                         struct container__bst* restrict
+                         struct container__bst* restrict,
+                         struct container__bst_scan* restrict
                         );
 
 
 inline void
 Container_UpdateBSTScan (
-                         struct container__bst_scan* restrict scan,
-                         struct container__bst* restrict      bst
+                         struct container__bst* restrict      bst,
+                         struct container__bst_scan* restrict scan
                         )
 {
     enum container__clist_scan_state state;
 
-    state = Container_CListScanState(&scan->ordering_scan, &bst->ordering);
+    state = Container_CListScanState(&bst->ordering, &scan->ordering_scan);
     if(state == container__clist_scan_incomplete)
     {
         scan->current_node = CONTAINER__CONTAINER_OF(
@@ -359,6 +373,51 @@ inline void
 Container_ResetBST (struct container__bst* restrict bst)
 {
     Container_InitBST(bst);
+}
+
+inline enum container__error_code
+Container_LookupBSTNode (
+                         void*                                 value,
+                         struct container__bst* restrict       bst,
+                         container__bst_lookup_type            lookup,
+                         void*                                 user_data,
+                         struct container__bst_node** restrict closest_node
+                        )
+{
+    struct container__bst_node* restrict scan;
+
+    scan = bst->root;
+
+    if(scan == NULL)
+        *closest_node = NULL;
+    else
+    {
+        struct container__bst_node* prev;
+
+        do
+        {
+            enum container__bst_compare_result result;
+
+            result = (*lookup)(value, scan, user_data);
+            if(result == container__bst_node_equal)
+            {
+                *closest_node = scan;
+
+                return container__error_none;
+            }
+
+            prev = scan;
+
+            if(result == container__bst_node_left)
+                scan = scan->left;
+            else
+                scan = scan->right;
+        }while(scan != NULL);
+
+        *closest_node = prev;
+    }
+
+    return container__error_value_not_found;
 }
 
 inline void
@@ -508,51 +567,6 @@ Container_RemoveBSTNode (
         move_node->parent = parent;
 }
 
-inline enum container__error_code
-Container_LookupBSTNode (
-                         void*                                 value,
-                         struct container__bst* restrict       bst,
-                         container__bst_lookup_type            lookup,
-                         void*                                 user_data,
-                         struct container__bst_node** restrict closest_node
-                        )
-{
-    struct container__bst_node* restrict scan;
-
-    scan = bst->root;
-
-    if(scan == NULL)
-        *closest_node = NULL;
-    else
-    {
-        struct container__bst_node* prev;
-
-        do
-        {
-            enum container__bst_compare_result result;
-
-            result = (*lookup)(value, scan, user_data);
-            if(result == container__bst_node_equal)
-            {
-                *closest_node = scan;
-
-                return container__error_none;
-            }
-
-            prev = scan;
-
-            if(result == container__bst_node_left)
-                scan = scan->left;
-            else
-                scan = scan->right;
-        }while(scan != NULL);
-
-        *closest_node = prev;
-    }
-
-    return container__error_value_not_found;
-}
-
 inline enum container__bst_state
 Container_BSTState (struct container__bst* restrict bst)
 {
@@ -563,43 +577,55 @@ Container_BSTState (struct container__bst* restrict bst)
 }
 
 inline void
-Container_StartBSTScanLeft (
-                            struct container__bst_scan* restrict scan,
-                            struct container__bst* restrict      bst
+Container_StartBSTScanNode (
+                            struct container__bst_node* restrict node,
+                            struct container__bst* restrict      bst,
+                            struct container__bst_scan* restrict scan
                            )
 {
-    Container_StartCListScanTail(&scan->ordering_scan, &bst->ordering);
-    Container_UpdateBSTScan(scan, bst);
+    Container_StartCListScanNode(&node->ordering_node, &scan->ordering_scan);
+    Container_UpdateBSTScan(bst, scan);
+}
+
+inline void
+Container_StartBSTScanLeft (
+                            struct container__bst* restrict      bst,
+                            struct container__bst_scan* restrict scan
+                           )
+{
+
+    Container_StartCListScanTail(&bst->ordering, &scan->ordering_scan);
+    Container_UpdateBSTScan(bst, scan);
 }
 
 inline void
 Container_StartBSTScanRight (
-                             struct container__bst_scan* restrict scan,
-                             struct container__bst* restrict      bst
+                             struct container__bst* restrict      bst,
+                             struct container__bst_scan* restrict scan
                             )
 {
-    Container_StartCListScanHead(&scan->ordering_scan, &bst->ordering);
-    Container_UpdateBSTScan(scan, bst);
+    Container_StartCListScanHead(&bst->ordering, &scan->ordering_scan);
+    Container_UpdateBSTScan(bst, scan);
 }
 
 inline void
 Container_ResumeBSTScanLeft (
-                             struct container__bst_scan* restrict scan,
-                             struct container__bst* restrict bst
+                             struct container__bst* restrict      bst,
+                             struct container__bst_scan* restrict scan
                             )
 {
     Container_ResumeCListScanPrev(&scan->ordering_scan);
-    Container_UpdateBSTScan(scan, bst);
+    Container_UpdateBSTScan(bst, scan);
 }
 
 inline void
 Container_ResumeBSTScanRight (
-                              struct container__bst_scan* restrict scan,
-                              struct container__bst* restrict bst
+                              struct container__bst* restrict      bst,
+                              struct container__bst_scan* restrict scan
                              )
 {
     Container_ResumeCListScanNext(&scan->ordering_scan);
-    Container_UpdateBSTScan(scan, bst);
+    Container_UpdateBSTScan(bst, scan);
 }
 
 inline enum container__bst_scan_state

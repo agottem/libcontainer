@@ -151,6 +151,40 @@ Container_ResetHash (struct container__hash* restrict);
 
 
 /*
+   Lookup the bucket which maps to the specified hash value
+
+   Syntax:
+     found_bucket = Container_LookupHashBucket(value, &my_hash);
+ */
+inline struct container__hash_bucket*
+Container_LookupHashBucket (unsigned int, struct container__hash* restrict);
+
+/*
+    Lookup a node in the hash.  Upon completion, the bucket searched for the node will be
+    set and the found node returned.  If no node was found, NULL is returned
+
+    Syntax:
+        found_node = Container_LookupHashNode(
+                                              MyHashValue(lookup_id),
+                                              &lookup_id,
+                                              &my_hash,
+                                              &MyLookup,
+                                              my_user_data,
+                                              &searched_bucket
+                                             );
+ */
+inline struct container__hash_node*
+Container_LookupHashNode (
+                          unsigned int,
+                          void*,
+                          struct container__hash* restrict,
+                          container__hash_lookup_type,
+                          void*,
+                          struct container__hash_bucket** restrict
+                         );
+
+
+/*
      Add a node to the hash, specifying the hash value for the node
 
      Syntax:
@@ -186,40 +220,15 @@ Container_RemoveHashNode (struct container__hash_node* restrict);
 
 
 /*
-    Lookup a node in the hash.  Upon completion, the bucket searched for the node will be
-    set and the found node returned.  If no node was found, NULL is returned
-
-    Syntax:
-        found_node = Container_LookupHashNode(
-                                              MyHashValue(lookup_id),
-                                              &lookup_id,
-                                              &my_hash,
-                                              &MyLookup,
-                                              my_user_data,
-                                              &searched_bucket
-                                             );
- */
-inline struct container__hash_node*
-Container_LookupHashNode (
-                          unsigned int,
-                          void*,
-                          struct container__hash* restrict,
-                          container__hash_lookup_type,
-                          void*,
-                          struct container__hash_bucket** restrict
-                         );
-
-
-/*
     Start a scan of a particular hash bucket
 
     Syntax:
-        Container_StartHashBucketScan(&bucket_scan, &my_buckets[scan_bucket_index]);
+        Container_StartHashBucketScan(&my_buckets[scan_bucket_index], &bucket_scan);
  */
 inline void
 Container_StartHashBucketScan (
-                               struct container__hash_bucket_scan* restrict,
-                               struct container__hash_bucket* restrict
+                               struct container__hash_bucket* restrict,
+                               struct container__hash_bucket_scan* restrict
                               );
 
 
@@ -227,12 +236,12 @@ Container_StartHashBucketScan (
     Resume a scan of a hash bucket
 
     Syntax:
-        Container_ResumeHashBucketScan(&bucket_scan, &my_buckets[scan_bucket_index]);
+        Container_ResumeHashBucketScan(&my_buckets[scan_bucket_index], &bucket_scan);
  */
 inline void
 Container_ResumeHashBucketScan (
-                                struct container__hash_bucket_scan* restrict,
-                                struct container__hash_bucket* restrict
+                                struct container__hash_bucket* restrict,
+                                struct container__hash_bucket_scan* restrict
                                );
 
 /*
@@ -250,20 +259,20 @@ Container_HashBucketScanState (struct container__hash_bucket_scan* restrict);
 
 inline void
 Container_UpdateHashBucketScan (
-                                struct container__hash_bucket_scan* restrict,
-                                struct container__hash_bucket* restrict
+                                struct container__hash_bucket* restrict,
+                                struct container__hash_bucket_scan* restrict
                                );
 
 
 inline void
 Container_UpdateHashBucketScan (
-                                struct container__hash_bucket_scan* restrict scan,
-                                struct container__hash_bucket* restrict      bucket
+                                struct container__hash_bucket* restrict      bucket,
+                                struct container__hash_bucket_scan* restrict scan
                                )
 {
     enum container__clist_scan_state state;
 
-    state = Container_CListScanState(&scan->node_scan, &bucket->node_list);
+    state = Container_CListScanState(&bucket->node_list, &scan->node_scan);
     if(state == container__clist_scan_incomplete)
     {
         scan->current_node = CONTAINER__CONTAINER_OF(
@@ -305,12 +314,8 @@ Container_ResetHash (struct container__hash* restrict hash)
         Container_ResetCList(&buckets[count].node_list);
 }
 
-inline void
-Container_AddHashNode (
-                       unsigned int                            value_hash,
-                       struct container__hash_node* restrict   node,
-                       struct container__hash* restrict        hash
-                      )
+inline struct container__hash_bucket*
+Container_LookupHashBucket (unsigned int value_hash, struct container__hash* restrict hash)
 {
     struct container__hash_bucket* hash_bucket;
 
@@ -318,22 +323,7 @@ Container_AddHashNode (
 
     hash_bucket = &hash->buckets[value_hash];
 
-    Container_AddCListHead(&node->node, &hash_bucket->node_list);
-}
-
-inline void
-Container_InsertHashNode (
-                          struct container__hash_node* restrict   node,
-                          struct container__hash_bucket* restrict bucket
-                         )
-{
-    Container_AddCListHead(&node->node, &bucket->node_list);
-}
-
-inline void
-Container_RemoveHashNode (struct container__hash_node* restrict node)
-{
-    Container_RemoveCListNode(&node->node);
+    return hash_bucket;
 }
 
 inline struct container__hash_node*
@@ -355,9 +345,9 @@ Container_LookupHashNode (
     *searched_bucket = hash_bucket;
 
     for(
-        Container_StartHashBucketScan(&scan, hash_bucket);
+        Container_StartHashBucketScan(hash_bucket, &scan);
         Container_HashBucketScanState(&scan) != container__hash_bucket_scan_finished;
-        Container_ResumeHashBucketScan(&scan, hash_bucket)
+        Container_ResumeHashBucketScan(hash_bucket, &scan)
        )
     {
         enum container__hash_compare_result result;
@@ -368,6 +358,35 @@ Container_LookupHashNode (
     }
 
     return NULL;
+}
+
+inline void
+Container_AddHashNode (
+                       unsigned int                            value_hash,
+                       struct container__hash_node* restrict   node,
+                       struct container__hash* restrict        hash
+                      )
+{
+    struct container__hash_bucket* hash_bucket;
+
+    hash_bucket = Container_LookupHashBucket(value_hash, hash);
+
+    Container_AddCListHead(&node->node, &hash_bucket->node_list);
+}
+
+inline void
+Container_InsertHashNode (
+                          struct container__hash_node* restrict   node,
+                          struct container__hash_bucket* restrict bucket
+                         )
+{
+    Container_AddCListHead(&node->node, &bucket->node_list);
+}
+
+inline void
+Container_RemoveHashNode (struct container__hash_node* restrict node)
+{
+    Container_RemoveCListNode(&node->node);
 }
 
 inline enum container__hash_bucket_state
@@ -384,22 +403,22 @@ Container_HashBucketState (struct container__hash_bucket* restrict bucket)
 
 inline void
 Container_StartHashBucketScan (
-                               struct container__hash_bucket_scan* restrict scan,
-                               struct container__hash_bucket* restrict      bucket
+                               struct container__hash_bucket* restrict      bucket,
+                               struct container__hash_bucket_scan* restrict scan
                               )
 {
-    Container_StartCListScanHead(&scan->node_scan, &bucket->node_list);
-    Container_UpdateHashBucketScan(scan, bucket);
+    Container_StartCListScanHead(&bucket->node_list, &scan->node_scan);
+    Container_UpdateHashBucketScan(bucket, scan);
 }
 
 inline void
 Container_ResumeHashBucketScan (
-                                struct container__hash_bucket_scan* restrict scan,
-                                struct container__hash_bucket* restrict      bucket
+                                struct container__hash_bucket* restrict      bucket,
+                                struct container__hash_bucket_scan* restrict scan
                                )
 {
     Container_ResumeCListScanNext(&scan->node_scan);
-    Container_UpdateHashBucketScan(scan, bucket);
+    Container_UpdateHashBucketScan(bucket, scan);
 }
 
 inline enum container__hash_bucket_scan_state

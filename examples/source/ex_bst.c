@@ -108,9 +108,9 @@ int main (int argument_count, char** arguments)
         Container_AddBSTNode(&entries[index].node, &my_bst, &MyBSTCompare, NULL);
 
     for(
-        Container_StartBSTScanRight(&scan, &my_bst);
+        Container_StartBSTScanRight(&my_bst, &scan);
         Container_BSTScanState(&scan) != container__bst_scan_finished;
-        Container_ResumeBSTScanRight(&scan, &my_bst)
+        Container_ResumeBSTScanRight(&my_bst, &scan)
        )
     {
         entry = CONTAINER__CONTAINER_OF(scan.current_node, struct my_data_entry, node);
