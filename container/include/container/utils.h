@@ -46,7 +46,7 @@
 
         struct my_element* my_el = CONTAINER__CONTAINER_OF(node_ptr, struct my_element, my_node);
  */
-#define CONTAINER__CONTAINER_OF(address, type, member) ((type*)((char*)address-offsetof(type, member)))
+#define CONTAINER__CONTAINER_OF(address, type, member) ((void*)((char*)address-offsetof(type, member)))
 
 
 #endif
