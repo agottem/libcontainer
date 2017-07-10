@@ -18,12 +18,13 @@
 # permission.
 
 
-nobase_include_HEADERS = container/error.h \
-                         container/utils.h \
-                         container/bal.h   \
-                         container/bst.h   \
-                         container/clist.h \
-                         container/hash.h  \
-                         container/queue.h \
-                         container/slist.h \
+nobase_include_HEADERS = container/error.h   \
+                         container/utils.h   \
+                         container/bal.h     \
+                         container/bst.h     \
+                         container/clist.h   \
+                         container/hash.h    \
+                         container/stdhash.h \
+                         container/queue.h   \
+                         container/slist.h   \
                          container/stack.h
