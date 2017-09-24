@@ -28,6 +28,7 @@
 #define _CONTAINER__HASH_H_
 
 
+#include <container/error.h>
 #include <container/clist.h>
 
 
@@ -139,6 +140,26 @@ Container_InitHash (
                     struct container__hash_bucket* restrict,
                     struct container__hash* restrict
                    );
+
+/*
+     Allocate hash buckets and initialize a hash.  The container will be empty upon
+     initialization
+
+     Syntax:
+         Container_CreateHash(bucket_count, &my_hash);
+ */
+inline enum container__error_code
+Container_CreateHash (unsigned int, struct container__hash* restrict);
+
+/*
+     Cleanup a previously created hash
+
+     Syntax:
+         Container_DestroyHash(&my_hash);
+ */
+inline void
+Container_DestroyHash (struct container__hash* restrict);
+
 
 /*
     Reset a hash container to the initialized state
@@ -256,6 +277,9 @@ Container_HashBucketScanState (struct container__hash_bucket_scan* restrict);
 
 #include <container/utils.h>
 
+#include <stddef.h>
+#include <stdlib.h>
+
 
 inline void
 Container_UpdateHashBucketScan (
@@ -298,6 +322,28 @@ Container_InitHash (
 
     while(count-- > 0)
         Container_InitCList(&buckets[count].node_list);
+}
+
+inline enum container__error_code
+Container_CreateHash (unsigned int count, struct container__hash* restrict hash)
+{
+    struct container__hash_bucket* buckets;
+    size_t                         alloc_size;
+
+    alloc_size = sizeof(struct container__hash_bucket)*count;
+    buckets    = malloc(alloc_size);
+    if(buckets == NULL)
+        return container__error_memory_alloc;
+
+    Container_InitHash(count, buckets, hash);
+
+    return container__error_none;
+}
+
+inline void
+Container_DestroyHash (struct container__hash* restrict hash)
+{
+    free(hash->buckets);
 }
 
 inline void

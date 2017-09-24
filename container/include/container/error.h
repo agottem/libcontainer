@@ -31,7 +31,8 @@ enum container__error_code
 {
     container__error_none,
     container__error_value_not_found,
-    container__error_resource_unavailable
+    container__error_resource_unavailable,
+    container__error_memory_alloc
 };
 
 

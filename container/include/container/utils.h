@@ -48,5 +48,22 @@
  */
 #define CONTAINER__CONTAINER_OF(address, type, member) ((void*)((char*)address-offsetof(type, member)))
 
+/*
+    Returns a pointer to the container of the specified type using std container types
+
+    For example:
+        struct my_element
+        {
+            int my_int;
+
+            struct std_container_node my_node;
+        };
+
+        struct std_container_node* node_ptr = StdContainerHead();
+
+        struct my_element* my_el = CONTAINER__STD_CONTAINER_OF(node_ptr, struct my_element, my_node);
+ */
+#define CONTAINER__STD_CONTAINER_OF(address, type, member) CONTAINER__CONTAINER_OF(address, type, member.node)
+
 
 #endif
