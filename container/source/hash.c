@@ -8,6 +8,12 @@ Container_InitHash (
                     struct container__hash* restrict
                    );
 
+extern enum container__error_code
+Container_CreateHash (unsigned int, struct container__hash* restrict);
+
+extern void
+Container_DestroyHash (struct container__hash* restrict);
+
 extern void
 Container_ResetHash (struct container__hash* restrict);
 
