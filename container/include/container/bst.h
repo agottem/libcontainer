@@ -33,9 +33,9 @@
 
 
 /*
-    Valid values a bst compare function may return
+    Valid values a bst cmp function may return
  */
-enum container__bst_compare_result
+enum container__bst_cmp_result
 {
     container__bst_node_left,
     container__bst_node_right,
@@ -103,7 +103,7 @@ struct container__bst_scan
     of traversal
 
     For example:
-        enum container__bst_compare_result
+        enum container__bst_cmp_result
         MyLookup (
                   void*                                lookup_key,
                   struct container__bst_node* restrict node_ptr,
@@ -122,7 +122,7 @@ struct container__bst_scan
             return container__bst_node_equal;
         }
  */
-typedef enum container__bst_compare_result
+typedef enum container__bst_cmp_result
 (*container__bst_lookup_type ) (
                                 void*,
                                 struct container__bst_node* restrict,
@@ -131,16 +131,16 @@ typedef enum container__bst_compare_result
 
 
 /*
-    The required type for a user-defined bst compare function.  The compare function
+    The required type for a user-defined bst cmp function.  The cmp function
     is responsible for comparing two nodes and returning relative placement
 
     For example:
-        enum container__bst_compare_result
-        MyCompare (
-                   struct container__bst_node* restrict node_1,
-                   struct container__bst_node* restrict node_2,
-                   void*                                user_data
-                  )
+        enum container__bst_cmp_result
+        MyCmp (
+               struct container__bst_node* restrict node_1,
+               struct container__bst_node* restrict node_2,
+               void*                                user_data
+              )
         {
             struct my_element* element_1;
 
@@ -155,12 +155,12 @@ typedef enum container__bst_compare_result
             return container__bst_node_equal;
         }
  */
-typedef enum container__bst_compare_result
-(*container__bst_compare_type) (
-                                struct container__bst_node* restrict,
-                                struct container__bst_node* restrict,
-                                void*
-                               );
+typedef enum container__bst_cmp_result
+(*container__bst_cmp_type) (
+                            struct container__bst_node* restrict,
+                            struct container__bst_node* restrict,
+                            void*
+                           );
 
 
 /*
@@ -211,13 +211,13 @@ Container_LookupBSTNode (
     Add a node to the bst
 
     Syntax:
-        Container_AddBSTNode(&my_element.node, &my_bst, &MyCompare, user_data);
+        Container_AddBSTNode(&my_element.node, &my_bst, &MyCmp, user_data);
  */
 inline void
 Container_AddBSTNode (
                       struct container__bst_node* restrict,
                       struct container__bst* restrict,
-                      container__bst_compare_type,
+                      container__bst_cmp_type,
                       void*
                      );
 
@@ -225,15 +225,15 @@ Container_AddBSTNode (
     Insert a node starting the insertion search from the specified node
 
     Syntax:
-       Container_InsertBSTNode(&my_element.node, existing_node_ptr, &MyCompare, user_data);
+       Container_InsBSTNode(&my_element.node, existing_node_ptr, &MyCmp, user_data);
  */
 inline void
-Container_InsertBSTNode (
-                         struct container__bst_node* restrict,
-                         struct container__bst_node* restrict,
-                         container__bst_compare_type,
-                         void*
-                        );
+Container_InsBSTNode (
+                      struct container__bst_node* restrict,
+                      struct container__bst_node* restrict,
+                      container__bst_cmp_type,
+                      void*
+                     );
 
 /*
     Remove a node from the specified bst
@@ -396,7 +396,7 @@ Container_LookupBSTNode (
 
         do
         {
-            enum container__bst_compare_result result;
+            enum container__bst_cmp_result result;
 
             result = (*lookup)(value, scan, user_data);
             if(result == container__bst_node_equal)
@@ -424,7 +424,7 @@ inline void
 Container_AddBSTNode (
                       struct container__bst_node* restrict node,
                       struct container__bst* restrict      bst,
-                      container__bst_compare_type          compare,
+                      container__bst_cmp_type              cmp,
                       void*                                user_data
                      )
 {
@@ -442,16 +442,16 @@ Container_AddBSTNode (
         Container_AddCListHead(&node->ordering_node, &bst->ordering);
     }
     else
-        Container_InsertBSTNode(node, root, compare, user_data);
+        Container_InsBSTNode(node, root, cmp, user_data);
 }
 
 inline void
-Container_InsertBSTNode (
-                         struct container__bst_node* restrict new_node,
-                         struct container__bst_node* restrict existing_node,
-                         container__bst_compare_type          compare,
-                         void*                                user_data
-                        )
+Container_InsBSTNode (
+                      struct container__bst_node* restrict new_node,
+                      struct container__bst_node* restrict existing_node,
+                      container__bst_cmp_type              cmp,
+                      void*                                user_data
+                     )
 {
     struct container__bst_node* scan;
 
@@ -462,9 +462,9 @@ Container_InsertBSTNode (
 
     while(1)
     {
-        enum container__bst_compare_result result;
+        enum container__bst_cmp_result result;
 
-        result = (*compare)(new_node, scan, user_data);
+        result = (*cmp)(new_node, scan, user_data);
         if(result == container__bst_node_left)
         {
             struct container__bst_node* restrict next;

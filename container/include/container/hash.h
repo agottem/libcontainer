@@ -35,7 +35,7 @@
 /*
     Valid values a hash lookup function may return
  */
-enum container__hash_compare_result
+enum container__hash_cmp_result
 {
     container__hash_node_not_equal,
     container__hash_node_equal
@@ -103,16 +103,16 @@ struct container__hash_bucket_scan
     The required type for a user-defined hash lookup function.
 
     For example:
-        enum container__hash_compare_result
+        enum container__hash_cmp_result
         MyLookup (
                   void*                                 id_to_lookup,
-                  struct container__hash_node* restrict compare_node,
+                  struct container__hash_node* restrict cmp_node,
                   void*                                 user_data
                  )
         {
             struct my_element* element;
 
-            element = CONTAINER__CONTAINER_OF(compare_node, struct my_element, node);
+            element = CONTAINER__CONTAINER_OF(cmp_node, struct my_element, node);
 
             if(element->my_id == *(my_id_type*)id_to_lookup)
                 return container__hash_node_equal;
@@ -120,7 +120,7 @@ struct container__hash_bucket_scan
             return container__hash_node_not_equal;
         }
  */
-typedef enum container__hash_compare_result
+typedef enum container__hash_cmp_result
 (*container__hash_lookup_type ) (
                                  void*,
                                  struct container__hash_node* restrict,
@@ -222,13 +222,13 @@ Container_AddHashNode (
     Insert a node into the specified hash bucket
 
     Syntax:
-        Container_InsertHashNode(&my_element.node, &my_hash_bucket);
+        Container_InsHashNode(&my_element.node, &my_hash_bucket);
  */
 inline void
-Container_InsertHashNode (
-                          struct container__hash_node* restrict,
-                          struct container__hash_bucket* restrict
-                         );
+Container_InsHashNode (
+                       struct container__hash_node* restrict,
+                       struct container__hash_bucket* restrict
+                      );
 
 /*
     Remove a node from the hash
@@ -396,7 +396,7 @@ Container_LookupHashNode (
         Container_ResumeHashBucketScan(hash_bucket, &scan)
        )
     {
-        enum container__hash_compare_result result;
+        enum container__hash_cmp_result result;
 
         result = (*lookup)(value, scan.current_node, user_data);
         if(result == container__hash_node_equal)
@@ -421,10 +421,10 @@ Container_AddHashNode (
 }
 
 inline void
-Container_InsertHashNode (
-                          struct container__hash_node* restrict   node,
-                          struct container__hash_bucket* restrict bucket
-                         )
+Container_InsHashNode (
+                       struct container__hash_node* restrict   node,
+                       struct container__hash_bucket* restrict bucket
+                      )
 {
     Container_AddCListHead(&node->node, &bucket->node_list);
 }

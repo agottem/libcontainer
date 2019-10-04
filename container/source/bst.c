@@ -22,17 +22,17 @@ extern void
 Container_AddBSTNode (
                       struct container__bst_node* restrict,
                       struct container__bst* restrict,
-                      container__bst_compare_type,
+                      container__bst_cmp_type,
                       void*
                      );
 
 extern void
-Container_InsertBSTNode (
-                         struct container__bst_node* restrict,
-                         struct container__bst_node* restrict,
-                         container__bst_compare_type,
-                         void*
-                        );
+Container_InsBSTNode (
+                      struct container__bst_node* restrict,
+                      struct container__bst_node* restrict,
+                      container__bst_cmp_type,
+                      void*
+                     );
 
 extern void
 Container_RemoveBSTNode (

@@ -44,7 +44,7 @@ struct my_data_entry
 static inline unsigned int
 KeyHashValue (char* restrict);
 
-static enum container__hash_compare_result
+static enum container__hash_cmp_result
 MyHashLookup (void*, struct container__hash_node* restrict, void*);
 
 
@@ -54,12 +54,12 @@ KeyHashValue (char* restrict key)
     return key[0];
 }
 
-static enum container__hash_compare_result
-MyHashLookup (void* lookup_key, struct container__hash_node* restrict compare_node, void* user_data)
+static enum container__hash_cmp_result
+MyHashLookup (void* lookup_key, struct container__hash_node* restrict cmp_node, void* user_data)
 {
     struct my_data_entry* restrict entry;
 
-    entry = CONTAINER__CONTAINER_OF(compare_node, struct my_data_entry, node);
+    entry = CONTAINER__CONTAINER_OF(cmp_node, struct my_data_entry, node);
 
     if(strcmp(lookup_key, entry->my_key) == 0)
         return container__hash_node_equal;

@@ -38,18 +38,18 @@ struct my_data_entry
 };
 
 
-static enum container__bst_compare_result
+static enum container__bst_cmp_result
 MyBSTLookup (void*, struct container__bst_node* restrict, void*);
 
-static enum container__bst_compare_result
-MyBSTCompare (
-              struct container__bst_node* restrict,
-              struct container__bst_node* restrict,
-              void*
-             );
+static enum container__bst_cmp_result
+MyBSTCmp (
+          struct container__bst_node* restrict,
+          struct container__bst_node* restrict,
+          void*
+         );
 
 
-static enum container__bst_compare_result
+static enum container__bst_cmp_result
 MyBSTLookup (void* lookup_key, struct container__bst_node* restrict node, void* user_data)
 {
     struct my_data_entry* restrict entry;
@@ -66,12 +66,12 @@ MyBSTLookup (void* lookup_key, struct container__bst_node* restrict node, void* 
     return container__bst_node_equal;
 }
 
-static enum container__bst_compare_result
-MyBSTCompare (
-              struct container__bst_node* restrict left_node,
-              struct container__bst_node* restrict right_node,
-              void*                                user_data
-             )
+static enum container__bst_cmp_result
+MyBSTCmp (
+          struct container__bst_node* restrict left_node,
+          struct container__bst_node* restrict right_node,
+          void*                                user_data
+         )
 {
     struct my_data_entry* restrict left_entry;
 
@@ -105,7 +105,7 @@ int main (int argument_count, char** arguments)
     entries[3].my_value = 1866;
 
     for(unsigned int index = 4; index-- > 0;)
-        Container_AddBSTNode(&entries[index].node, &my_bst, &MyBSTCompare, NULL);
+        Container_AddBSTNode(&entries[index].node, &my_bst, &MyBSTCmp, NULL);
 
     for(
         Container_StartBSTScanRight(&my_bst, &scan);

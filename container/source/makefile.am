@@ -24,12 +24,13 @@ libcontainer_la_CFLAGS = -I$(top_srcdir)/include
 
 libcontainer_la_LDFLAGS = -version-info 1:0:0
 
-libcontainer_la_SOURCES = bal.c     \
-                          bst.c     \
-                          clist.c   \
-                          hash.c    \
-                          stdhash.c \
-                          queue.c   \
-                          slist.c   \
+libcontainer_la_SOURCES = bal.c      \
+                          bst.c      \
+                          clist.c    \
+                          hash.c     \
+                          stdhash.c  \
+                          stdhlist.c \
+                          queue.c    \
+                          slist.c    \
                           stack.c
 

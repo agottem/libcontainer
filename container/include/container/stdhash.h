@@ -62,10 +62,10 @@ struct container__string_hash_node
 };
 
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_IntHashTest (int, int);
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_IntHashLookup (
                          void*,
                          struct container__hash_node* restrict,
@@ -81,16 +81,16 @@ Container_AddIntHash (
                      );
 
 inline void
-Container_InsertIntHash (
-                         int,
-                         struct container__int_hash_node* restrict,
-                         struct container__hash_bucket* restrict
-                        );
+Container_InsIntHash (
+                      int,
+                      struct container__int_hash_node* restrict,
+                      struct container__hash_bucket* restrict
+                     );
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_UIntHashTest (unsigned int, unsigned int);
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_UIntHashLookup (
                           void*,
                           struct container__hash_node* restrict,
@@ -106,16 +106,16 @@ Container_AddUIntHash (
                       );
 
 inline void
-Container_InsertUIntHash (
-                          unsigned int,
-                          struct container__uint_hash_node* restrict,
-                          struct container__hash_bucket* restrict
-                         );
+Container_InsUIntHash (
+                       unsigned int,
+                       struct container__uint_hash_node* restrict,
+                       struct container__hash_bucket* restrict
+                      );
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_LongHashTest (long long, long long);
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_LongHashLookup (
                           void*,
                           struct container__hash_node* restrict,
@@ -131,16 +131,16 @@ Container_AddLongHash (
                       );
 
 inline void
-Container_InsertLongHash (
-                          long long,
-                          struct container__long_hash_node* restrict,
-                          struct container__hash_bucket* restrict
-                         );
+Container_InsLongHash (
+                       long long,
+                       struct container__long_hash_node* restrict,
+                       struct container__hash_bucket* restrict
+                      );
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_ULongHashTest (unsigned long long, unsigned long long);
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_ULongHashLookup (
                            void*,
                            struct container__hash_node* restrict,
@@ -156,16 +156,16 @@ Container_AddULongHash (
                        );
 
 inline void
-Container_InsertULongHash (
-                           unsigned long long,
-                           struct container__ulong_hash_node* restrict,
-                           struct container__hash_bucket* restrict
-                          );
+Container_InsULongHash (
+                        unsigned long long,
+                        struct container__ulong_hash_node* restrict,
+                        struct container__hash_bucket* restrict
+                       );
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_StringHashTest (char*, char*);
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_StringHashLookup (
                             void*,
                             struct container__hash_node* restrict,
@@ -181,18 +181,18 @@ Container_AddStringHash (
                         );
 
 inline void
-Container_InsertStringHash (
-                            char*,
-                            struct container__string_hash_node* restrict,
-                            struct container__hash_bucket* restrict
-                           );
+Container_InsStringHash (
+                         char*,
+                         struct container__string_hash_node* restrict,
+                         struct container__hash_bucket* restrict
+                        );
 
 
 #include <string.h>
 #include <container/utils.h>
 
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_IntHashTest (int l_value, int r_value)
 {
     if(l_value == r_value)
@@ -201,7 +201,7 @@ Container_IntHashTest (int l_value, int r_value)
     return container__hash_node_not_equal;
 }
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_IntHashLookup (
                          void*                                 lookup_value,
                          struct container__hash_node* restrict existing_node,
@@ -210,7 +210,7 @@ Container_IntHashLookup (
 {
     int* restrict                             int_lookup_value;
     struct container__int_hash_node* restrict existing_int_node;
-    enum container__hash_compare_result       compare_result;
+    enum container__hash_cmp_result           cmp_result;
 
     int_lookup_value  = lookup_value;
     existing_int_node = CONTAINER__CONTAINER_OF(
@@ -219,9 +219,9 @@ Container_IntHashLookup (
                                                 node
                                                );
 
-    compare_result = Container_IntHashTest(*int_lookup_value, existing_int_node->value);
+    cmp_result = Container_IntHashTest(*int_lookup_value, existing_int_node->value);
 
-    return compare_result;
+    return cmp_result;
 }
 
 inline void
@@ -242,18 +242,18 @@ Container_AddIntHash (
 }
 
 inline void
-Container_InsertIntHash (
-                         int                                       value,
-                         struct container__int_hash_node* restrict node,
-                         struct container__hash_bucket* restrict   bucket
-                        )
+Container_InsIntHash (
+                      int                                       value,
+                      struct container__int_hash_node* restrict node,
+                      struct container__hash_bucket* restrict   bucket
+                     )
 {
     node->value = value;
 
-    Container_InsertHashNode(&node->node, bucket);
+    Container_InsHashNode(&node->node, bucket);
 }
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_UIntHashTest (unsigned int l_value, unsigned int r_value)
 {
     if(l_value == r_value)
@@ -262,7 +262,7 @@ Container_UIntHashTest (unsigned int l_value, unsigned int r_value)
     return container__hash_node_not_equal;
 }
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_UIntHashLookup (
                           void*                                 lookup_value,
                           struct container__hash_node* restrict existing_node,
@@ -271,7 +271,7 @@ Container_UIntHashLookup (
 {
     unsigned int* restrict                     uint_lookup_value;
     struct container__uint_hash_node* restrict existing_uint_node;
-    enum container__hash_compare_result        compare_result;
+    enum container__hash_cmp_result            cmp_result;
 
     uint_lookup_value  = lookup_value;
     existing_uint_node = CONTAINER__CONTAINER_OF(
@@ -280,9 +280,9 @@ Container_UIntHashLookup (
                                                  node
                                                 );
 
-    compare_result = Container_UIntHashTest(*uint_lookup_value, existing_uint_node->value);
+    cmp_result = Container_UIntHashTest(*uint_lookup_value, existing_uint_node->value);
 
-    return compare_result;
+    return cmp_result;
 }
 
 inline void
@@ -303,18 +303,18 @@ Container_AddUIntHash (
 }
 
 inline void
-Container_InsertUIntHash (
-                          unsigned int                               value,
-                          struct container__uint_hash_node* restrict node,
-                          struct container__hash_bucket* restrict    bucket
-                         )
+Container_InsUIntHash (
+                       unsigned int                               value,
+                       struct container__uint_hash_node* restrict node,
+                       struct container__hash_bucket* restrict    bucket
+                      )
 {
     node->value = value;
 
-    Container_InsertHashNode(&node->node, bucket);
+    Container_InsHashNode(&node->node, bucket);
 }
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_LongHashTest (long long l_value, long long r_value)
 {
     if(l_value == r_value)
@@ -323,7 +323,7 @@ Container_LongHashTest (long long l_value, long long r_value)
     return container__hash_node_not_equal;
 }
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_LongHashLookup (
                           void*                                 lookup_value,
                           struct container__hash_node* restrict existing_node,
@@ -332,7 +332,7 @@ Container_LongHashLookup (
 {
     long long* restrict                        long_lookup_value;
     struct container__long_hash_node* restrict existing_long_node;
-    enum container__hash_compare_result        compare_result;
+    enum container__hash_cmp_result            cmp_result;
 
     long_lookup_value  = lookup_value;
     existing_long_node = CONTAINER__CONTAINER_OF(
@@ -341,9 +341,9 @@ Container_LongHashLookup (
                                                  node
                                                 );
 
-    compare_result = Container_LongHashTest(*long_lookup_value, existing_long_node->value);
+    cmp_result = Container_LongHashTest(*long_lookup_value, existing_long_node->value);
 
-    return compare_result;
+    return cmp_result;
 }
 
 inline void
@@ -364,18 +364,18 @@ Container_AddLongHash (
 }
 
 inline void
-Container_InsertLongHash (
-                          long long                                  value,
-                          struct container__long_hash_node* restrict node,
-                          struct container__hash_bucket* restrict    bucket
-                         )
+Container_InsLongHash (
+                       long long                                  value,
+                       struct container__long_hash_node* restrict node,
+                       struct container__hash_bucket* restrict    bucket
+                      )
 {
     node->value = value;
 
-    Container_InsertHashNode(&node->node, bucket);
+    Container_InsHashNode(&node->node, bucket);
 }
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_ULongHashTest (unsigned long long l_value, unsigned long long r_value)
 {
     if(l_value == r_value)
@@ -384,7 +384,7 @@ Container_ULongHashTest (unsigned long long l_value, unsigned long long r_value)
     return container__hash_node_not_equal;
 }
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_ULongHashLookup (
                            void*                                 lookup_value,
                            struct container__hash_node* restrict existing_node,
@@ -393,7 +393,7 @@ Container_ULongHashLookup (
 {
     unsigned long long* restrict                ulong_lookup_value;
     struct container__ulong_hash_node* restrict existing_ulong_node;
-    enum container__hash_compare_result         compare_result;
+    enum container__hash_cmp_result             cmp_result;
 
     ulong_lookup_value  = lookup_value;
     existing_ulong_node = CONTAINER__CONTAINER_OF(
@@ -402,9 +402,9 @@ Container_ULongHashLookup (
                                                   node
                                                  );
 
-    compare_result = Container_ULongHashTest(*ulong_lookup_value, existing_ulong_node->value);
+    cmp_result = Container_ULongHashTest(*ulong_lookup_value, existing_ulong_node->value);
 
-    return compare_result;
+    return cmp_result;
 }
 
 inline void
@@ -425,18 +425,18 @@ Container_AddULongHash (
 }
 
 inline void
-Container_InsertULongHash (
-                           unsigned long long                          value,
-                           struct container__ulong_hash_node* restrict node,
-                           struct container__hash_bucket* restrict     bucket
-                          )
+Container_InsULongHash (
+                        unsigned long long                          value,
+                        struct container__ulong_hash_node* restrict node,
+                        struct container__hash_bucket* restrict     bucket
+                       )
 {
     node->value = value;
 
-    Container_InsertHashNode(&node->node, bucket);
+    Container_InsHashNode(&node->node, bucket);
 }
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_StringHashTest (char* l_value, char* r_value)
 {
     int delta;
@@ -448,7 +448,7 @@ Container_StringHashTest (char* l_value, char* r_value)
     return container__hash_node_not_equal;
 }
 
-inline enum container__hash_compare_result
+inline enum container__hash_cmp_result
 Container_StringHashLookup (
                             void*                                 lookup_value,
                             struct container__hash_node* restrict existing_node,
@@ -456,7 +456,7 @@ Container_StringHashLookup (
                            )
 {
     struct container__string_hash_node* restrict existing_string_node;
-    enum container__hash_compare_result          compare_result;
+    enum container__hash_cmp_result          cmp_result;
 
     existing_string_node = CONTAINER__CONTAINER_OF(
                                                    existing_node,
@@ -464,9 +464,9 @@ Container_StringHashLookup (
                                                    node
                                                   );
 
-    compare_result = Container_StringHashTest(lookup_value, existing_string_node->value);
+    cmp_result = Container_StringHashTest(lookup_value, existing_string_node->value);
 
-    return compare_result;
+    return cmp_result;
 }
 
 inline void
@@ -487,15 +487,15 @@ Container_AddStringHash (
 }
 
 inline void
-Container_InsertStringHash (
-                            char* restrict                               value,
-                            struct container__string_hash_node* restrict node,
-                            struct container__hash_bucket* restrict      bucket
-                           )
+Container_InsStringHash (
+                         char* restrict                               value,
+                         struct container__string_hash_node* restrict node,
+                         struct container__hash_bucket* restrict      bucket
+                        )
 {
     node->value = value;
 
-    Container_InsertHashNode(&node->node, bucket);
+    Container_InsHashNode(&node->node, bucket);
 }
 
 

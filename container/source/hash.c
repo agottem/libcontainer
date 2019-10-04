@@ -43,10 +43,10 @@ Container_AddHashNode (
                       );
 
 extern void
-Container_InsertHashNode (
-                          struct container__hash_node* restrict,
-                          struct container__hash_bucket* restrict
-                         );
+Container_InsHashNode (
+                       struct container__hash_node* restrict,
+                       struct container__hash_bucket* restrict
+                      );
 
 extern void
 Container_RemoveHashNode (struct container__hash_node* restrict);

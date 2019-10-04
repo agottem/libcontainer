@@ -1,10 +1,10 @@
 #include <container/stdhash.h>
 
 
-extern enum container__hash_compare_result
+extern enum container__hash_cmp_result
 Container_IntHashTest (int, int);
 
-extern enum container__hash_compare_result
+extern enum container__hash_cmp_result
 Container_IntHashLookup (
                          void*,
                          struct container__hash_node* restrict,
@@ -20,16 +20,16 @@ Container_AddIntHash (
                      );
 
 extern void
-Container_InsertIntHash (
-                         int,
-                         struct container__int_hash_node* restrict,
-                         struct container__hash_bucket* restrict
-                        );
+Container_InsIntHash (
+                      int,
+                      struct container__int_hash_node* restrict,
+                      struct container__hash_bucket* restrict
+                     );
 
-extern enum container__hash_compare_result
+extern enum container__hash_cmp_result
 Container_UIntHashTest (unsigned int, unsigned int);
 
-extern enum container__hash_compare_result
+extern enum container__hash_cmp_result
 Container_UIntHashLookup (
                           void*,
                           struct container__hash_node* restrict,
@@ -45,16 +45,16 @@ Container_AddUIntHash (
                       );
 
 extern void
-Container_InsertUIntHash (
-                          unsigned int,
-                          struct container__uint_hash_node* restrict,
-                          struct container__hash_bucket* restrict
-                         );
+Container_InsUIntHash (
+                       unsigned int,
+                       struct container__uint_hash_node* restrict,
+                       struct container__hash_bucket* restrict
+                      );
 
-extern enum container__hash_compare_result
+extern enum container__hash_cmp_result
 Container_LongHashTest (long long, long long);
 
-extern enum container__hash_compare_result
+extern enum container__hash_cmp_result
 Container_LongHashLookup (
                           void*,
                           struct container__hash_node* restrict,
@@ -70,16 +70,16 @@ Container_AddLongHash (
                       );
 
 extern void
-Container_InsertLongHash (
-                          long long,
-                          struct container__long_hash_node* restrict,
-                          struct container__hash_bucket* restrict
-                         );
+Container_InsLongHash (
+                       long long,
+                       struct container__long_hash_node* restrict,
+                       struct container__hash_bucket* restrict
+                      );
 
-extern enum container__hash_compare_result
+extern enum container__hash_cmp_result
 Container_ULongHashTest (unsigned long long, unsigned long long);
 
-extern enum container__hash_compare_result
+extern enum container__hash_cmp_result
 Container_ULongHashLookup (
                            void*,
                            struct container__hash_node* restrict,
@@ -95,16 +95,16 @@ Container_AddULongHash (
                        );
 
 extern void
-Container_InsertULongHash (
-                           unsigned long long,
-                           struct container__ulong_hash_node* restrict,
-                           struct container__hash_bucket* restrict
-                          );
+Container_InsULongHash (
+                        unsigned long long,
+                        struct container__ulong_hash_node* restrict,
+                        struct container__hash_bucket* restrict
+                       );
 
-extern enum container__hash_compare_result
+extern enum container__hash_cmp_result
 Container_StringHashTest (char*, char*);
 
-extern enum container__hash_compare_result
+extern enum container__hash_cmp_result
 Container_StringHashLookup (
                             void*,
                             struct container__hash_node* restrict,
@@ -120,8 +120,8 @@ Container_AddStringHash (
                         );
 
 extern void
-Container_InsertStringHash (
-                            char*,
-                            struct container__string_hash_node* restrict,
-                            struct container__hash_bucket* restrict
-                           );
+Container_InsStringHash (
+                         char*,
+                         struct container__string_hash_node* restrict,
+                         struct container__hash_bucket* restrict
+                        );
